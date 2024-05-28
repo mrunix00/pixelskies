@@ -8,10 +8,6 @@ int main() {
 
     cli::SetColor();
     rootMenu->Insert(
-            "hello",
-            [](std::ostream &out) { out << "Hello, world\n"; },
-            "Print hello world");
-    rootMenu->Insert(
             "login", {"id", "password"},
             [&bluesky](std::ostream &out, const std::string &id, const std::string &password) {
                 auto err = bluesky.signIn(
@@ -61,9 +57,6 @@ int main() {
             "Fetch notifications");
 
     cli::Cli cli(std::move(rootMenu));
-    // global exit action
-    cli.ExitAction([](auto &out) { out << "Goodbye and thanks for all the fish.\n"; });
-
     cli::CliFileSession input(cli);
     input.Start();
 

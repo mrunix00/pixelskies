@@ -7,23 +7,7 @@ Bluesky::Bluesky() = default;
 
 Bluesky::~Bluesky() = default;
 
-std::optional<BlueskyError> Bluesky::signUp(
-        const std::string &provider,
-        const std::string &identifier,
-        const std::string &password) {
-    /* Unimplemented! */
-    throw std::exception();
-}
-
-std::optional<BlueskyError> Bluesky::signIn(
-        const std::string &provider,
-        const std::string &identifier,
-        const std::string &password) {
-    cpr::Response r = cpr::Post(
-            cpr::Url{provider + "/xrpc/com.atproto.server.createSession"},
-            cpr::Body{R"({"identifier": ")" + identifier + R"(", "password": ")" + password + "\"}"},
-            cpr::Header{{"Content-Type", "application/json"}});
-
+static inline Either<BlueskyError, Json::Value> parseRequest(const cpr::Response &r) {
     if (r.error) {
         return BlueskyError{"NetworkError", r.error.message};
     }
@@ -43,6 +27,34 @@ std::optional<BlueskyError> Bluesky::signIn(
         return BlueskyError{
                 parsed_json["error"].asString(),
                 parsed_json["message"].asString()};
+    }
+
+    return parsed_json;
+}
+
+std::optional<BlueskyError> Bluesky::signUp(
+        const std::string &provider,
+        const std::string &identifier,
+        const std::string &password) {
+    /* Unimplemented! */
+    throw std::exception();
+}
+
+std::optional<BlueskyError> Bluesky::signIn(
+        const std::string &provider,
+        const std::string &identifier,
+        const std::string &password) {
+    cpr::Response r = cpr::Post(
+            cpr::Url{provider + "/xrpc/com.atproto.server.createSession"},
+            cpr::Body{R"({"identifier": ")" + identifier + R"(", "password": ")" + password + "\"}"},
+            cpr::Header{{"Content-Type", "application/json"}});
+
+    auto parse_result = parseRequest(r);
+    Json::Value parsed_json;
+    if (!parse_result.isSuccess) {
+        return parse_result.getError();
+    } else {
+        parsed_json = std::move(parse_result.getSuccess());
     }
 
     std::vector<BlueskyService> didDocServices;
@@ -84,25 +96,12 @@ Either<BlueskyError, BlueskyProfile> Bluesky::getProfile() const {
             cpr::Header{{"Content-Type", "application/json"}},
             cpr::Header{{"authorization", "Bearer " + session.accessJWT}});
 
-    if (r.error) {
-        return BlueskyError{"NetworkError", r.error.message};
-    }
-
+    auto parse_result = parseRequest(r);
     Json::Value parsed_json;
-    Json::CharReaderBuilder builder;
-    JSONCPP_STRING err;
-    const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-
-    if (!reader->parse(r.text.c_str(),
-                       r.text.c_str() + r.text.length(),
-                       &parsed_json, &err)) {
-        return BlueskyError{"JsonParseError", err};
-    }
-
-    if (r.status_code >= 400) {
-        return BlueskyError{
-                parsed_json["error"].asString(),
-                parsed_json["message"].asString()};
+    if (!parse_result.isSuccess) {
+        return parse_result.getError();
+    } else {
+        parsed_json = std::move(parse_result.getSuccess());
     }
 
     return BlueskyProfile{
@@ -117,7 +116,8 @@ Either<BlueskyError, BlueskyProfile> Bluesky::getProfile() const {
 }
 
 static inline constexpr enum BlueskyNotification::Reason notificationReasonToEnum(const std::string &reason) {
-    if (reason == "like") return BlueskyNotification::Reason::LIKE;
+    if (reason == "like")
+        return BlueskyNotification::Reason::LIKE;
     else if (reason == "repost")
         return BlueskyNotification::Reason::REPOST;
     else if (reason == "follow")
@@ -138,25 +138,12 @@ Either<BlueskyError, std::vector<BlueskyNotification>> Bluesky::fetchNotificatio
             cpr::Header{{"Content-Type", "application/json"}},
             cpr::Header{{"authorization", "Bearer " + session.accessJWT}});
 
-    if (r.error) {
-        return BlueskyError{"NetworkError", r.error.message};
-    }
-
+    auto parse_result = parseRequest(r);
     Json::Value parsed_json;
-    Json::CharReaderBuilder builder;
-    JSONCPP_STRING err;
-    const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-
-    if (!reader->parse(r.text.c_str(),
-                       r.text.c_str() + r.text.length(),
-                       &parsed_json, &err)) {
-        return BlueskyError{"JsonParseError", err};
-    }
-
-    if (r.status_code >= 400) {
-        return BlueskyError{
-                parsed_json["error"].asString(),
-                parsed_json["message"].asString()};
+    if (!parse_result.isSuccess) {
+        return parse_result.getError();
+    } else {
+        parsed_json = std::move(parse_result.getSuccess());
     }
 
     std::vector<BlueskyNotification> notifications;
