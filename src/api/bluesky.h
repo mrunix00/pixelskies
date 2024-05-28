@@ -23,14 +23,6 @@ struct BlueskyService {
     std::string serviceEndpoint;
 };
 
-struct DidDoc {
-    std::vector<std::string> context;
-    std::string id;
-    std::vector<std::string> knownAs;
-    std::vector<BlueskyVerificationMethod> verificationMethods;
-    std::vector<BlueskyService> services;
-};
-
 struct BlueskyProfile {
     std::string did;
     std::string handle;
@@ -43,7 +35,6 @@ struct BlueskyProfile {
 
 struct BlueskySession {
     std::string did;
-    DidDoc didDoc;
     std::string handle;
     std::string email;
     bool emailConfirmed;

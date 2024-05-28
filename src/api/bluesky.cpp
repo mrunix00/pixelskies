@@ -1,19 +1,11 @@
 #include "bluesky.h"
 
 #include <cpr/cpr.h>
-#include <iostream>
 #include <json/json.h>
 
 Bluesky::Bluesky() = default;
 
 Bluesky::~Bluesky() = default;
-
-static inline std::vector<std::string> parseJsonList(const Json::Value &json) {
-    std::vector<std::string> result;
-    for (const auto &context: json)
-        result.push_back(context.asString());
-    return result;
-}
 
 std::optional<BlueskyError> Bluesky::signUp(
         const std::string &provider,
@@ -74,13 +66,6 @@ std::optional<BlueskyError> Bluesky::signIn(
 
     session = {
             .did = parsed_json["did"].asString(),
-            //            .didDoc = {
-            //                    .context = parseJsonList(parsed_json["didDoc"]["context"]),
-            //                    .id = parsed_json["did"]["id"].asString(),
-            //                    .knownAs = parseJsonList(parsed_json["didDoc"]["knownAs"]),
-            //                    .verificationMethods = std::move(didDocVerificationMethods),
-            //                    .services = std::move(didDocServices),
-            //            },
             .handle = parsed_json["handle"].asString(),
             .email = parsed_json["email"].asString(),
             .emailConfirmed = parsed_json["emailConfirmed"].asBool(),
