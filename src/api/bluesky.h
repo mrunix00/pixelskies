@@ -5,6 +5,38 @@
 #include <string>
 #include <vector>
 
+struct BlueskyNotification {
+    std::string uri;
+    std::string cid;
+    struct {
+        std::string did;
+        std::string handle;
+        std::string displayName;
+        std::string avatar;
+        struct {
+            bool muted;
+            bool blockedBy;
+            std::string followedBy;
+        } viewer;
+    } author;
+    enum class Reason {
+        LIKE,
+        REPOST,
+        FOLLOW,
+        MENTION,
+        REPLY,
+        QUOTE,
+    } reason;
+    std::string reasonAsString;
+    struct {
+        std::string type;
+        std::string createdAt;
+        std::string subject;
+    } record;
+    bool isRead;
+    std::string indexedAt;
+};
+
 struct BlueskyError {
     std::string code{};
     std::string message{};
@@ -63,4 +95,5 @@ public:
             const std::string &password);
 
     [[nodiscard]] Either<BlueskyError, BlueskyProfile> getProfile() const;
+    [[nodiscard]] Either<BlueskyError, std::vector<BlueskyNotification>> fetchNotifications(u_int64_t limit) const;
 };

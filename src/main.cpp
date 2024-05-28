@@ -42,6 +42,23 @@ int main() {
                 }
             },
             "Log into Bluesky");
+    rootMenu->Insert(
+            "notifications", {"count"},
+            [&bluesky](std::ostream &out, int count) {
+                auto result = bluesky.fetchNotifications(count);
+                if (result.isSuccess) {
+                    for (const auto &notification: result.getSuccess()) {
+                        out << "==== Notification ====\n"
+                            << "Type: " << notification.reasonAsString << "\n"
+                            << "Author: " << notification.author.handle << "\n"
+                            << "Time: " << notification.indexedAt << "\n"
+                            << "Is read: " << (notification.isRead ? std::string("true") : std::string("false")) << '\n';
+                    }
+                } else {
+                    std::cerr << "Error: " << result.getError().message << std::endl;
+                }
+            },
+            "Fetch notifications");
 
     cli::Cli cli(std::move(rootMenu));
     // global exit action

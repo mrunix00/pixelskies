@@ -115,3 +115,72 @@ Either<BlueskyError, BlueskyProfile> Bluesky::getProfile() const {
             .postsCount = parsed_json["postsCount"].asUInt64(),
     };
 }
+
+static inline constexpr enum BlueskyNotification::Reason notificationReasonToEnum(const std::string &reason) {
+    if (reason == "like") return BlueskyNotification::Reason::LIKE;
+    else if (reason == "repost")
+        return BlueskyNotification::Reason::REPOST;
+    else if (reason == "follow")
+        return BlueskyNotification::Reason::FOLLOW;
+    else if (reason == "mention")
+        return BlueskyNotification::Reason::MENTION;
+    else if (reason == "reply")
+        return BlueskyNotification::Reason::REPLY;
+    else if (reason == "quote")
+        return BlueskyNotification::Reason::QUOTE;
+    else
+        throw std::logic_error("Unknown notification reason!");
+}
+
+Either<BlueskyError, std::vector<BlueskyNotification>> Bluesky::fetchNotifications(u_int64_t limit) const {
+    cpr::Response r = cpr::Get(
+            cpr::Url{session.provider + "/xrpc/app.bsky.notification.listNotifications?limit=" + std::to_string(limit)},
+            cpr::Header{{"Content-Type", "application/json"}},
+            cpr::Header{{"authorization", "Bearer " + session.accessJWT}});
+
+    if (r.error) {
+        return BlueskyError{"NetworkError", r.error.message};
+    }
+
+    Json::Value parsed_json;
+    Json::CharReaderBuilder builder;
+    JSONCPP_STRING err;
+    const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+
+    if (!reader->parse(r.text.c_str(),
+                       r.text.c_str() + r.text.length(),
+                       &parsed_json, &err)) {
+        return BlueskyError{"JsonParseError", err};
+    }
+
+    if (r.status_code >= 400) {
+        return BlueskyError{
+                parsed_json["error"].asString(),
+                parsed_json["message"].asString()};
+    }
+
+    std::vector<BlueskyNotification> notifications;
+    for (const auto &notification: parsed_json["notifications"]) {
+        notifications.push_back({
+                .uri = notification["uri"].asString(),
+                .cid = notification["cid"].asString(),
+                .author = {
+                        .did = notification["author"]["did"].asString(),
+                        .handle = notification["author"]["handle"].asString(),
+                        .displayName = notification["author"]["displayName"].asString(),
+                        .avatar = notification["author"]["avatar"].asString(),
+                        .viewer = {
+                                .muted = notification["author"]["viewer"]["muted"].asBool(),
+                                .blockedBy = notification["author"]["viewer"]["blockedBy"].asBool(),
+                                .followedBy = notification["author"]["viewer"]["followedBy"].asString(),
+                        },
+                },
+                .reason = notificationReasonToEnum(notification["reason"].asString()),
+                .reasonAsString = notification["reason"].asString(),
+                .isRead = notification["isRead"].asBool(),
+                .indexedAt = notification["indexedAt"].asString(),
+        });
+    }
+
+    return notifications;
+}
