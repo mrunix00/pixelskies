@@ -57,25 +57,6 @@ std::optional<BlueskyError> Bluesky::signIn(
         parsed_json = std::move(parse_result.getSuccess());
     }
 
-    std::vector<BlueskyService> didDocServices;
-    for (const auto &context: parsed_json["didDoc"]["services"]) {
-        didDocServices.push_back({
-                .id = context["id"].asString(),
-                .type = context["type"].asString(),
-                .serviceEndpoint = context["serviceEndpoint"].asString(),
-        });
-    }
-
-    std::vector<BlueskyVerificationMethod> didDocVerificationMethods;
-    for (const auto &context: parsed_json["didDoc"]["verificationMethods"]) {
-        didDocVerificationMethods.push_back({
-                .id = context["id"].asString(),
-                .type = context["type"].asString(),
-                .controller = context["controller"].asString(),
-                .publicKeyMultibase = context["publicKeyMultibase"].asString(),
-        });
-    }
-
     session = {
             .did = parsed_json["did"].asString(),
             .handle = parsed_json["handle"].asString(),

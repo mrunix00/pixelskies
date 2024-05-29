@@ -53,19 +53,6 @@ struct BlueskyError {
     std::string message{};
 };
 
-struct BlueskyVerificationMethod {
-    std::string id;
-    std::string type;
-    std::string controller;
-    std::string publicKeyMultibase;
-};
-
-struct BlueskyService {
-    std::string id;
-    std::string type;
-    std::string serviceEndpoint;
-};
-
 struct BlueskyProfile {
     std::string did;
     std::string handle;
