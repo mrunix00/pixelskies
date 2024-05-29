@@ -5,6 +5,31 @@
 #include <string>
 #include <vector>
 
+struct BlueskyPost {
+    std::string uri;
+    std::string cid;
+    struct {
+        std::string did;
+        std::string handle;
+        std::string displayName;
+        std::string avatar;
+        u_int64_t replyCount;
+        u_int64_t repostCount;
+        u_int64_t likeCount;
+        std::string indexedAt;
+    } author;
+    struct {
+        std::string type;
+        std::string text;
+    } record;
+    std::string context;
+};
+
+struct BlueskyFeed {
+    std::string cursor;
+    std::vector<BlueskyPost> posts;
+};
+
 struct BlueskyPreference {
     enum class Type {
         FEED,
@@ -95,4 +120,6 @@ public:
     [[nodiscard]] Either<BlueskyError, BlueskyProfile> getProfile() const;
     [[nodiscard]] Either<BlueskyError, std::vector<BlueskyNotification>> fetchNotifications(u_int64_t limit) const;
     [[nodiscard]] Either<BlueskyError, std::vector<BlueskyPreference>> fetchPreferences() const;
+    [[nodiscard]] Either<BlueskyError, BlueskyFeed> fetchFeed(const std::string &at_uri, u_int64_t limit, const std::string &cursor) const;
+    [[nodiscard]] Either<BlueskyError, BlueskyFeed> fetchFeed(const std::string &at_uri, u_int64_t limit) const;
 };

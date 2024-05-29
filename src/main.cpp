@@ -71,6 +71,35 @@ int main() {
                 }
             },
             "Fetch preferences");
+    rootMenu->Insert(
+            "feed",
+            [&bluesky](std::ostream &out) {
+                auto result = bluesky.fetchPreferences();
+                if (!result.isSuccess) {
+                    std::cerr << "Error: " << result.getError().message << std::endl;
+                } else {
+                    auto preferences = result.getSuccess();
+                    std::string feed_uri;
+                    for (const auto &preference: preferences) {
+                        if (preference.type == BlueskyPreference::Type::FEED) {
+                            feed_uri = preference.value;
+                            break;
+                        }
+                    }
+                    auto feed = bluesky.fetchFeed(feed_uri, 5);
+                    if (!feed.isSuccess) {
+                        std::cerr << "Error: " << feed.getError().message << std::endl;
+                    } else {
+                        for (const auto &post: feed.getSuccess().posts) {
+                            out << "==== Post ====\n"
+                                << "Author: " << post.author.displayName << "(" << post.author.handle << ")\n"
+                                << "Type: " << post.record.type << "\n"
+                                << post.record.text << "\n";
+                        }
+                    }
+                }
+            },
+            "Fetch preferences");
 
     cli::Cli cli(std::move(rootMenu));
     cli::CliFileSession input(cli);

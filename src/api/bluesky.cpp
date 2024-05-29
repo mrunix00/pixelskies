@@ -193,3 +193,53 @@ Either<BlueskyError, std::vector<BlueskyPreference>> Bluesky::fetchPreferences()
 
     return preferences;
 }
+
+Either<BlueskyError, BlueskyFeed> Bluesky::fetchFeed(
+        const std::string &at_uri,
+        u_int64_t limit,
+        const std::string &cursor) const {
+    cpr::Response r = cpr::Get(
+            cpr::Url{session.provider + "/xrpc/app.bsky.feed.getFeed?feed=" + at_uri +
+                     "&limit=" + std::to_string(limit) +
+                     (!cursor.empty() ? std::string("&cursor=" + cursor) : "")},
+            cpr::Header{{"Content-Type", "application/json"}},
+            cpr::Header{{"authorization", "Bearer " + session.accessJWT}});
+
+    auto parse_result = parseRequest(r);
+    if (!parse_result.isSuccess) {
+        return parse_result.getError();
+    }
+
+    Json::Value parsed_json = std::move(parse_result.getSuccess());
+
+    std::vector<BlueskyPost> posts;
+    for (const auto &feed_item: parsed_json["feed"]) {
+        const auto &feed = feed_item["post"];
+        posts.push_back({
+                .uri = feed["uri"].asString(),
+                .cid = feed["cid"].asString(),
+                .author = {
+                        .did = feed["author"]["did"].asString(),
+                        .handle = feed["author"]["handle"].asString(),
+                        .displayName = feed["author"]["displayName"].asString(),
+                        .avatar = feed["author"]["avatar"].asString(),
+                        .replyCount = feed["author"]["replyCount"].asUInt64(),
+                        .repostCount = feed["author"]["repostCount"].asUInt64(),
+                        .likeCount = feed["author"]["likeCount"].asUInt64(),
+                        .indexedAt = feed["author"]["indexedAt"].asString(),
+                },
+                .record = {
+                        .type = feed["record"]["$type"].asString(),
+                        .text = feed["record"]["text"].asString(),
+                },
+                .context = feed["context"].asString(),
+        });
+    }
+
+    return (BlueskyFeed){.cursor = parsed_json["cursor"].asString(),
+                         .posts = std::move(posts)};
+}
+
+Either<BlueskyError, BlueskyFeed> Bluesky::fetchFeed(const std::string &at_uri, u_int64_t limit) const {
+    return fetchFeed(at_uri, limit, "");
+}
