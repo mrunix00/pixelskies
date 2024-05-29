@@ -5,6 +5,17 @@
 #include <string>
 #include <vector>
 
+struct BlueskyPreference {
+    enum class Type {
+        FEED,
+        LIST,
+        TIMELINE,
+    } type;
+    std::string typeString;
+    std::string value;
+    bool pinned;
+};
+
 struct BlueskyNotification {
     std::string uri;
     std::string cid;
@@ -96,4 +107,5 @@ public:
 
     [[nodiscard]] Either<BlueskyError, BlueskyProfile> getProfile() const;
     [[nodiscard]] Either<BlueskyError, std::vector<BlueskyNotification>> fetchNotifications(u_int64_t limit) const;
+    [[nodiscard]] Either<BlueskyError, std::vector<BlueskyPreference>> fetchPreferences() const;
 };

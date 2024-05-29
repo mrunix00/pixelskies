@@ -171,3 +171,44 @@ Either<BlueskyError, std::vector<BlueskyNotification>> Bluesky::fetchNotificatio
 
     return notifications;
 }
+
+static inline constexpr enum BlueskyPreference::Type preferenceTypeToEnum(const std::string &type) {
+    if (type == "feed")
+        return BlueskyPreference::Type::FEED;
+    else if (type == "list")
+        return BlueskyPreference::Type::LIST;
+    else if (type == "timeline")
+        return BlueskyPreference::Type::TIMELINE;
+    else
+        throw std::logic_error("Unknown preference type! (type: " + type + ")");
+}
+
+Either<BlueskyError, std::vector<BlueskyPreference>> Bluesky::fetchPreferences() const {
+    cpr::Response r = cpr::Get(
+            cpr::Url{session.provider + "/xrpc/app.bsky.actor.getPreferences"},
+            cpr::Header{{"Content-Type", "application/json"}},
+            cpr::Header{{"authorization", "Bearer " + session.accessJWT}});
+
+    auto parse_result = parseRequest(r);
+    if (!parse_result.isSuccess) {
+        return parse_result.getError();
+    }
+
+    Json::Value parsed_json = std::move(parse_result.getSuccess());
+
+    std::vector<BlueskyPreference> preferences;
+    for (const auto &preference: parsed_json["preferences"]) {
+        if (preference["$type"] == "app.bsky.actor.defs#savedFeedsPrefV2") {
+            for (const auto &item: preference["items"]) {
+                preferences.push_back({
+                        .type = preferenceTypeToEnum(item["type"].asString()),
+                        .typeString = item["type"].asString(),
+                        .value = item["value"].asString(),
+                        .pinned = item["pinned"].asBool(),
+                });
+            }
+        }
+    }
+
+    return preferences;
+}

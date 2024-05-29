@@ -55,6 +55,22 @@ int main() {
                 }
             },
             "Fetch notifications");
+    rootMenu->Insert(
+            "preferences",
+            [&bluesky](std::ostream &out) {
+                auto result = bluesky.fetchPreferences();
+                if (!result.isSuccess) {
+                    std::cerr << "Error: " << result.getError().message << std::endl;
+                } else {
+                    auto preferences = result.getSuccess();
+                    for (const auto &preference: preferences) {
+                        out << "==== Preference ====\n"
+                            << "Type: " << preference.typeString << "\n"
+                            << "Value: " << preference.value << "\n";
+                    }
+                }
+            },
+            "Fetch preferences");
 
     cli::Cli cli(std::move(rootMenu));
     cli::CliFileSession input(cli);
