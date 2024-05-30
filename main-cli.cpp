@@ -1,6 +1,6 @@
 #include "bluesky.h"
-#include <cli/cli.h>
-#include <cli/clifilesession.h>
+#include "cli/cli.h"
+#include "cli/clifilesession.h"
 
 int main() {
     auto rootMenu = std::make_unique<cli::Menu>("cli");
