@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import "ui"
 
 Window {
     width: 640
@@ -8,14 +9,9 @@ Window {
     title: "PixelSkies"
     color: "#161E27"
 
-    Button {
-        text: "Click me!"
-        palette.buttonText: down ? "#454B52" : "#ffffff"
+    BlueskyTextInput {
         anchors.centerIn: parent
-        padding: 10
-        background: Rectangle {
-            color: parent.down ? "#123352" : "#208BFE"
-            radius: 20
-        }
+        width: 400
+        height: 40
     }
 }
