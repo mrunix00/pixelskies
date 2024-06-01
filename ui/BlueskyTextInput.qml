@@ -2,6 +2,7 @@ import QtQuick
 
 Item {
     property string text
+    height: 40
 
     Rectangle {
         color: "#1E2936"

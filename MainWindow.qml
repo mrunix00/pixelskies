@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import "ui"
 
 Window {
@@ -9,9 +8,16 @@ Window {
     title: "PixelSkies"
     color: "#161E27"
 
-    BlueskyTextInput {
+    Grid {
         anchors.centerIn: parent
-        width: 400
-        height: 40
+        spacing: 20
+        BlueskyTextInput {
+            width: 400
+        }
+        BlueskyButton {
+            label: "Submit"
+            width: 100
+        }
+
     }
 }
