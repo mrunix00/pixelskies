@@ -2,6 +2,9 @@ import QtQuick
 
 Item {
     property string text
+    property bool obscured: false
+    property alias textInput: textInput
+    property Item nextTab
     height: 40
 
     Rectangle {
@@ -22,5 +25,7 @@ Item {
         selectionColor: "#3584E4"
         verticalAlignment: Text.AlignVCenter
         focus: true
+        KeyNavigation.tab: nextTab.textInput
+        echoMode: obscured ? TextInput.Password : TextInput.Normal
     }
 }

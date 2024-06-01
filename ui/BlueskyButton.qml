@@ -5,6 +5,7 @@ Item {
     property string label
 
     height: 40
+    width: button.width
 
     Button {
         id: button
