@@ -96,7 +96,7 @@ Either<BlueskyError, BlueskyProfile> Bluesky::getProfile() const {
     };
 }
 
-static inline constexpr enum BlueskyNotification::Reason notificationReasonToEnum(const std::string &reason) {
+static inline enum BlueskyNotification::Reason notificationReasonToEnum(const std::string &reason) {
     if (reason == "like")
         return BlueskyNotification::Reason::LIKE;
     else if (reason == "repost")
@@ -153,7 +153,7 @@ Either<BlueskyError, std::vector<BlueskyNotification>> Bluesky::fetchNotificatio
     return notifications;
 }
 
-static inline constexpr enum BlueskyPreference::Type preferenceTypeToEnum(const std::string &type) {
+static inline enum BlueskyPreference::Type preferenceTypeToEnum(const std::string &type) {
     if (type == "feed")
         return BlueskyPreference::Type::FEED;
     else if (type == "list")
