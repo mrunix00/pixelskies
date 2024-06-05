@@ -11,6 +11,6 @@ int main(int argc, char *argv[]) {
             []() { QCoreApplication::exit(-1); },
             Qt::QueuedConnection);
     engine.addImportPath(":/");
-    engine.loadFromModule("PixelSkies", "MainWindow");
+    engine.load(QUrl(QStringLiteral("qrc:/PixelSkies/MainWindow.qml")));
     return QGuiApplication::exec();
 }

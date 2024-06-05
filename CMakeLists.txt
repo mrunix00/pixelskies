@@ -25,7 +25,7 @@ fetch_dependency(cli https://github.com/daniele77/cli.git master)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-find_package(Qt6 COMPONENTS REQUIRED Quick)
+find_package(Qt6 6.2 COMPONENTS REQUIRED Quick)
 
 add_executable(PixelSkies-CLI main-cli.cpp src/api/bluesky.cpp)
 add_executable(PixelSkies-GUI main-gui.cpp src/api/bluesky.cpp)
