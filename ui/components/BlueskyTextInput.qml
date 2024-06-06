@@ -1,7 +1,7 @@
 import QtQuick
 
 Item {
-    property string text
+    property alias text: textInput.text
     property bool obscured: false
     property alias textInput: textInput
     property Item nextTab

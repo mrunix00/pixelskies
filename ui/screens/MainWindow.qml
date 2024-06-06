@@ -1,8 +1,9 @@
 import QtQuick
 import QtQuick.Layouts
-import "ui"
+import QtQuick.Controls
+import "../components"
 
-Window {
+ApplicationWindow {
     width: 640
     height: 480
     visible: true
@@ -55,8 +56,9 @@ Window {
         }
 
         BlueskyButton {
-            label: "Sign-in"
+            text: "Sign-in"
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            onClicked: gui.signIn(idInput.text, passwordInput.text)
         }
     }
 }
