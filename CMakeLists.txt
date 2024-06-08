@@ -36,6 +36,7 @@ qt_add_qml_module(PixelSkies-GUI
         QML_FILES
         ui/screens/MainWindow.qml
         ui/screens/HomePage.qml
+        ui/screens/LoginPage.qml
         ui/components/BlueskyTextInput.qml
         ui/components/BlueskyButton.qml
 )

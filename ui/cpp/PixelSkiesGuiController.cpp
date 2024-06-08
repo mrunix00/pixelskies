@@ -12,7 +12,8 @@ void PixelSkiesGuiController::signIn(const QString &identifier, const QString &p
     if (error.has_value()) {
         std::cerr << "Error: " << error->code << " " << error->message << std::endl;
     } else {
-        engine->load(QStringLiteral("qrc:/PixelSkies/ui/screens/HomePage.qml"));
-        std::cout << "Sign in successful" << std::endl;
+        engine->rootObjects()[0]
+                ->findChild<QObject *>("loader")
+                ->setProperty("source", "HomePage.qml");
     }
 }
