@@ -39,6 +39,16 @@ qt_add_qml_module(PixelSkies-GUI
         ui/screens/LoginPage.qml
         ui/components/BlueskyTextInput.qml
         ui/components/BlueskyButton.qml
+        ui/components/BlueskyIconButton.qml
+        ui/components/BlueskySidebar.qml
+)
+qt_add_resources(PixelSkies-GUI imagesources FILES
+        resources/material/chat.svg
+        resources/material/home.svg
+        resources/material/notifications.svg
+        resources/material/profile.svg
+        resources/material/search.svg
+        resources/material/settings.svg
 )
 target_link_libraries(PixelSkies-CLI PRIVATE cpr::cpr jsoncpp_lib cli)
 target_link_libraries(PixelSkies-GUI PRIVATE cpr::cpr jsoncpp_lib cli)

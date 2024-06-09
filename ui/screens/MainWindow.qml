@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 ApplicationWindow {
+    id: window
     width: 640
     height: 480
     visible: true
@@ -11,11 +12,7 @@ ApplicationWindow {
 
     Loader {
         objectName: "loader"
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.leftMargin: 40
-        anchors.rightMargin: 40
+        anchors.fill: parent
         source: "LoginPage.qml"
     }
 }
