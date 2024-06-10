@@ -3,10 +3,16 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import "../components"
 
-RowLayout {
-    spacing: 0
-    children: [
+Rectangle {
+    id: page
+    color: "#00000000"
+    RowLayout {
+        anchors.fill: parent
+        spacing: 0
         BlueskySidebar {
+            id: sideBar
+            width: window.width >= 800 ? 220 : 60
+            Layout.preferredWidth: width
             children: [
                 BlueskyIconButton {
                     text: "Home"
@@ -33,8 +39,9 @@ RowLayout {
                     icon.source: "qrc:/resources/material/settings.svg"
                 }
             ]
-        },
+        }
         Rectangle {
+            id: mainContent
             color: "#00000000"
             border.color: "#00000000"
             Layout.fillHeight: true
@@ -63,5 +70,5 @@ RowLayout {
                 ]
             }
         }
-    ]
+    }
 }

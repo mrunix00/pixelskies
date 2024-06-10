@@ -7,6 +7,9 @@ include_directories(src/api src/utils)
 
 include(FetchContent)
 
+file(GLOB_RECURSE SOURCES src/*.cpp)
+file(GLOB_RECURSE UI_SOURCES ui/cpp/PixelSkiesGuiController.cpp)
+
 function(fetch_dependency name git_url git_tag)
     FetchContent_Declare(
             ${name}
@@ -27,9 +30,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 find_package(Qt6 6.2 COMPONENTS REQUIRED Quick)
 
-add_executable(PixelSkies-CLI main-cli.cpp src/api/bluesky.cpp)
-add_executable(PixelSkies-GUI main-gui.cpp src/api/bluesky.cpp
-        ui/cpp/PixelSkiesGuiController.cpp)
+add_executable(PixelSkies-CLI main-cli.cpp ${SOURCES})
+add_executable(PixelSkies-GUI main-gui.cpp ${SOURCES} ${UI_SOURCES})
 qt_add_qml_module(PixelSkies-GUI
         URI PixelSkies
         VERSION 1.0
