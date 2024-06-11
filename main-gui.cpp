@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
             []() { QCoreApplication::exit(-1); },
             Qt::QueuedConnection);
     engine.addImportPath(":/");
-    engine.load(QUrl(QStringLiteral("qrc:/PixelSkies/ui/screens/MainWindow.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:/ui/screens/MainWindow.qml")));
 
     QQmlContext *rootContext = engine.rootContext();
     PixelSkiesGuiController gui(&engine);
